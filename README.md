@@ -17,17 +17,31 @@ npm run test:e2e
 
 Browser tests use installed Google Chrome (Playwright channel "chrome") and start the production server on port 3100. Build before testing. Screenshots are written to ignored test-results/. No browser binaries are downloaded automatically.
 
-## Content required before launch
+## Content and assets
 
 Edit src/content/site.ts, the source of truth for identity, skills, projects, and experience.
 
-- Add a real email and GitHub/LinkedIn URLs. Contact actions appear only when configured; no invented addresses are shipped.
-- Set site.url to the final HTTPS origin. Set readyToIndex to true only when public copy is verified. Until then, metadata and robots block indexing and the sitemap is empty. Next.js warns about its localhost social-image fallback until a real URL is configured.
-- Verify each starter project, then set verified: true. Drafts remain visibly labeled and excluded from the sitemap.
-- Add authentic screenshots as screenshot: { src: "/images/example.webp", alt: "Describe the actual interface" }. Use local files in public/images. Illustrative fallback artwork is explicitly labeled.
-- Confirm or replace the journey entries, then set journeyVerified to true. No dates, employers, or metrics have been added.
-- Add a real PDF under public/ and set resumePath. The resume download renders only if that local PDF exists at build time.
-- Confirm the existing location, availability, technologies, and personal narrative.
+Identity, contact details, three experience entries, education, seven training entries and six projects are populated from the supplied CV. Interests come from the owner's brief. `verified` identifies CV-backed project content; it does not claim an independent employment or repository audit.
+
+- The canonical origin is `https://portofolio-gamma-gilt.vercel.app`. `readyToIndex` remains false pending the content review in `CODEX_NEXT_STEPS.md`. Metadata and robots block indexing, and the sitemap remains empty.
+- The original Market Simulator route is preserved as a visibly labeled draft, excluded from featured work and the sitemap.
+- Add a personal photo under `public/images`, then set `site.portrait` to `{ src: "/images/mario.webp", alt: "Mario Ayman", position: "center" }`. The existing illustration remains until an authentic portrait is supplied. The frame handles cropping, grayscale/color, zoom and glow.
+- Add authentic project screenshots through `screenshot: { src: "/images/example.webp", alt: "Describe the actual interface" }`. All existing fallback artwork is labeled illustrative.
+- Missing facts and uncertain older content are recorded in `contentTodos` and the handoff notes, rather than invented in public copy.
+
+## Public CV
+
+`public/Mario-Ayman-CV.pdf` is a three-page public edition generated from the curated portfolio data. It includes the public email, profile links and city/country; it does not copy the private phone number or original DOCX into the repository.
+
+After editing the content, regenerate and review it before committing:
+
+```sh
+npm run cv:generate
+# Optional print-layout screenshots in ignored test-results/:
+npm run cv:generate -- --preview
+```
+
+Generation needs installed Google Chrome and development dependencies. Vercel serves the committed PDF and does not run Chrome during builds. The download link renders only if the configured local PDF exists at build time.
 
 ## Implementation
 
@@ -43,7 +57,7 @@ Skills support arrow keys, Home, End and Tab. Mobile navigation contains keyboar
 
 ## Deployment
 
-Import this repository into Vercel with the Next.js preset. Use the repository root, npm ci, and npm run build. No backend credentials are required. Set the canonical URL in content, verify content, rebuild, and deploy. This task does not publish the site.
+Import `Marioo-Ayman/Portofolio` into Vercel with the Next.js preset. Use the repository root, `npm ci`, and `npm run build`; leave the output directory at its Next.js default. No backend credentials are required. Commit the generated public PDF with the source. Fresh builds need Google Fonts network access. Review a preview deployment before promoting to production. Enable `site.readyToIndex` only after the remaining content review, then rebuild. This task does not publish the site.
 
 Metadata includes Open Graph/Twitter previews, a generated local social image, the existing SVG icon, sitemap and robots routes. An error boundary supplies retry/home actions.
 

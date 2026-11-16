@@ -42,7 +42,7 @@ export function SiteHeader() {
   }, [open]);
   return <>
     <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
-      <Link className="brand" href="/#home" onClick={() => setOpen(false)} aria-label="Return to home"><span className="brand-mark" aria-hidden="true">忍</span><span className="brand-separator"/><span className="brand-label">{site.name}</span></Link>
+      <Link className="brand" href="/#home" onClick={() => setOpen(false)} aria-label="Return to home"><span className="brand-mark" lang="ja" aria-hidden="true">忍</span><span className="brand-separator"/><span className="brand-label">{site.displayName}</span></Link>
       <nav className="desktop-nav" aria-label="Primary navigation">{navigation.map(({number,label,href}) =>
         <Link href={`/${href}`} key={href} aria-current={pathname === "/" && active === href.slice(1) ? "location" : undefined} className={`nav-link ${pathname === "/" && active === href.slice(1) ? "active" : ""}`}><span>{number}</span>{label}</Link>
       )}</nav>

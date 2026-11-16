@@ -9,6 +9,7 @@ import { Projects } from "@/components/sections/Projects";
 import { Journey } from "@/components/sections/Journey";
 import { Contact } from "@/components/sections/Contact";
 import { ChapterRail } from "@/components/layout/ChapterRail";
+import { ResumeLink } from "@/components/ui/ResumeLink";
 
 export default function Home() {
   return <>
@@ -17,7 +18,7 @@ export default function Home() {
     <ScrollProgress />
     <SiteHeader />
     <ChapterRail />
-    <main id="main-content" tabIndex={-1}><Hero/><About/><Arsenal/><Projects/><Journey/><Contact/></main>
+    <main id="main-content" tabIndex={-1}><Hero/><About/><Arsenal/><Projects/><Journey/><Contact resume={<ResumeLink />}/></main>
     <ScrollAtmosphere />
   </>;
 }

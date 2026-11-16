@@ -1,7 +1,20 @@
 import type { ProjectArt } from "@/content/site";
-import { Activity, CheckCircle2, CircleUserRound, Code2, Headphones, Radio, TrendingUp } from "lucide-react";
+import { Activity, CheckCircle2, CircleUserRound, Code2, Headphones, Radio, TrendingUp, Workflow, MapPin, Stethoscope, ClipboardCheck } from "lucide-react";
 
 export function ProjectArtwork({ art }: { art: ProjectArt }) {
+  const concepts = {
+    tasks: { Icon: Workflow, title: "From input to action", label: "TASKS / INTELLIGENCE", stages: ["CAPTURE", "EXTRACT", "ASSIGN"] },
+    travel: { Icon: MapPin, title: "Every journey connected", label: "TRAVEL / DISCOVERY", stages: ["EXPLORE", "SELECT", "BOOK"] },
+    healthcare: { Icon: Stethoscope, title: "Closer to better care", label: "HEALTHCARE / ACCESS", stages: ["DISCOVER", "LOCATE", "BOOK"] },
+    quiz: { Icon: ClipboardCheck, title: "A structure for learning", label: "EDUCATION / ASSESSMENT", stages: ["CREATE", "SCHEDULE", "ASSESS"] },
+  };
+  if (art in concepts) {
+    const { Icon, title, label, stages } = concepts[art as keyof typeof concepts];
+    return <div className={`artwork artwork-concept artwork-${art}`} role="img" aria-label={`Concept illustration: ${title}. Not a product screenshot.`}>
+      <div className="art-grid"/><div className="concept-orbit" aria-hidden="true"/>
+      <div className="concept-content" aria-hidden="true"><span className="concept-label">{label}</span><div className="concept-icon"><Icon size={42} strokeWidth={1.2}/></div><strong>{title}</strong><div className="concept-stages">{stages.map((stage, index) => <span key={stage}><i>0{index + 1}</i>{stage}</span>)}</div></div>
+    </div>;
+  }
   if (art === "support") return <div className="artwork artwork-support" aria-label="Illustrative preview of support software">
     <div className="art-grid"/>
     <div className="mock-app support-app">
@@ -30,7 +43,7 @@ export function ProjectArtwork({ art }: { art: ProjectArt }) {
         <svg viewBox="0 0 450 130" role="img" aria-label="Decorative growth chart"><defs><linearGradient id="investFade" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#ff446a" stopOpacity=".27"/><stop offset="100%" stopColor="#ff446a" stopOpacity="0"/></linearGradient></defs><path d="M0 108 C40 107 52 92 88 98 S144 85 178 77 S240 82 268 55 S318 69 354 38 S404 42 450 6 L450 130 L0 130Z" fill="url(#investFade)"/><path d="M0 108 C40 107 52 92 88 98 S144 85 178 77 S240 82 268 55 S318 69 354 38 S404 42 450 6" stroke="#ff315d" strokeWidth="3" fill="none"/></svg>
       </div>
     </div>
-    <span className="art-side-label">BILINGUAL / RESPONSIVE</span>
+    <span className="art-side-label">ROLE-BASED / RESPONSIVE</span>
   </div>;
 
   return <div className="artwork artwork-market" aria-label="Illustrative preview of a stock market simulator">

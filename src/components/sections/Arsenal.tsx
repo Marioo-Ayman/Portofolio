@@ -3,12 +3,14 @@ import { useRef, useState } from "react";
 import { ArrowUpRight, Cpu, Database, PanelsTopLeft, Wrench } from "lucide-react";
 import { techGroups } from "@/content/site";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { motion, useReducedMotion } from "motion/react";
 const icons = [PanelsTopLeft, Cpu, Database, Wrench];
 export function Arsenal() {
   const [selected, setSelected] = useState(0);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
   const group = techGroups[selected];
   const Icon = icons[selected];
+  const reducedMotion = useReducedMotion();
   return <section className="section arsenal-section" id="arsenal" aria-labelledby="arsenal-heading">
     <div className="section-ambient ambient-indigo" aria-hidden="true"/>
     <div className="shell">
@@ -27,7 +29,7 @@ export function Arsenal() {
         </div>
         <div className="arsenal-card arsenal-panel" role="tabpanel" id="skill-panel" aria-labelledby={`skill-tab-${selected}`} tabIndex={0} key={selected}>
           <div><div className="arsenal-card-top"><span>LAYER / {group.index}</span><ArrowUpRight size={16}/></div><div className="arsenal-icon"><Icon size={30} strokeWidth={1.4}/></div><h3>{group.label}</h3><p>{group.detail}</p></div>
-          <div className="arsenal-tags">{group.technologies.map(tech => <span key={tech}>{tech}</span>)}</div>
+          <div className="arsenal-tags">{group.technologies.map((tech, index) => <motion.span key={tech} initial={reducedMotion ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={reducedMotion ? { duration: 0 } : { duration: .22, delay: index * .025 }}>{tech}</motion.span>)}</div>
           <span className="arsenal-watermark" aria-hidden="true">{group.index}</span>
         </div>
       </div>

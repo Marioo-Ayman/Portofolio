@@ -44,6 +44,7 @@ for (const width of [320, 375, 768, 1024, 1440, 1920]) {
     const errors: string[] = [];
     page.on("pageerror", error => errors.push(error.message));
     await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
     await expect(page.getByRole("dialog")).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.getByRole("tab", { name: /Databases/ }).click();
@@ -69,18 +70,46 @@ for (const width of [320, 375, 768, 1024, 1440, 1920]) {
 
 test("case studies, missing route, metadata and accessibility", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  for (const slug of ["live-support-system", "investment-experience", "stock-market-simulator"]) {
+  for (const slug of ["live-support-system", "investment-experience", "ai-task-management", "safarni", "cure-app", "online-quiz-platform"]) {
+    await page.setViewportSize({ width: 375, height: 900 });
     const response = await page.goto(`/projects/${slug}`);
+    await page.evaluate(() => document.fonts.ready);
     expect(response?.status()).toBe(200);
     await expect(page.locator("h1")).toBeVisible();
-    await expect(page.locator(".content-note")).toContainText("Draft");
+    await expect(page.locator(".content-note")).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "My contribution" })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    const caseStudyAudit = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
+    expect(caseStudyAudit.violations).toEqual([]);
   }
+  await page.goto("/projects/stock-market-simulator");
+  await expect(page.locator(".content-note")).toContainText("Unverified portfolio draft");
   expect((await page.goto("/projects/does-not-exist"))?.status()).toBe(404);
   await page.goto("/");
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
   expect(results.violations).toEqual([]);
   expect((await page.request.get("/opengraph-image")).status()).toBe(200);
   expect(await (await page.request.get("/robots.txt")).text()).toContain("Disallow: /");
+});
+
+test("CV-backed contact actions and public resume", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/#contact");
+  await expect(page.locator('a[href="mailto:mario.ayman098@gmail.com"]')).toBeVisible();
+  await page.getByRole("button", { name: "Copy email" }).click();
+  await expect(page.getByRole("status")).toHaveText("Email copied.");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("mario.ayman098@gmail.com");
+  await expect(page.locator('.social-links a[href="https://github.com/Marioo-Ayman"]')).toBeVisible();
+  await expect(page.locator('.social-links a[href="https://www.linkedin.com/in/mario-ayman-4822522a3"]')).toBeVisible();
+  const download = page.waitForEvent("download");
+  await page.locator("#contact").getByRole("link", { name: "Download CV" }).click();
+  expect((await download).suggestedFilename()).toBe("Mario-Ayman-CV.pdf");
+  const pdf = await page.request.get("/Mario-Ayman-CV.pdf");
+  expect(pdf.status()).toBe(200);
+  expect((await pdf.body()).subarray(0, 5).toString()).toBe("%PDF-");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://portofolio-gamma-gilt.vercel.app");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
 });
 
 test("animated chapters remain usable and respond to reduced motion", async ({ page }) => {

@@ -14,9 +14,9 @@ export function Hero() {
     <div className="hero-container shell">
       <div className="hero-content">
         <div className="hero-status hero-animate"><span className="status-pulse"/> {site.status}</div>
-        <p className="hero-overline hero-animate"><span>{"//"}</span> FULL-STACK DEVELOPER <span className="overline-dot">◆</span> CREATIVE ENGINEER</p>
-        <h1 id="hero-title" className="hero-title hero-animate">CODE<br/><span>MEETS</span><br/><em>CULTURE<span className="hero-period">.</span></em></h1>
-        <p className="hero-description hero-animate">{site.description} Inspired by Japanese culture, anime storytelling and immersive game worlds.</p>
+        <p className="hero-overline hero-animate"><span>{"//"}</span> {site.role} <span className="overline-dot">◆</span> {site.location}</p>
+        <h1 id="hero-title" className="hero-title" aria-label={site.title}>{site.heroLines.map((line, index) => <span className={`hero-title-line hero-title-line-${index}`} key={line}><span data-hero-line>{line}</span></span>)}</h1>
+        <p className="hero-description hero-animate">{site.heroDescription}</p>
         <div className="hero-actions hero-animate">
           <MagneticLink href="#projects" className="button button-red"><Code2 size={17}/> Explore my work <ArrowUpRight size={17}/></MagneticLink>
           <MagneticLink href="#about" className="button button-ghost"><Gamepad2 size={18}/> The developer</MagneticLink>

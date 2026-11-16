@@ -12,11 +12,15 @@ export function About() {
     <div className="shell">
       <SectionHeading index="02" eyebrow="THE PERSON BEHIND THE PIXELS" title={<>The developer behind <span>the code.</span></>} />
       <div className="about-grid">
-        <div className="about-scene" data-reveal>
-          <div className="about-gridlines"/><div className="about-sun"/><div className="about-floor"/>
-          <div className="about-codebox"><div><span>01</span> const developer = {'{'}</div><div><span>02</span> &nbsp; passion: <em>&quot;building&quot;</em>,</div><div><span>03</span> &nbsp; inspiration: <em>&quot;Japan&quot;</em>,</div><div><span>04</span> &nbsp; mindset: <em>&quot;always learning&quot;</em>,</div><div><span>05</span> {'}'}</div><div className="about-cursor">▌</div></div>
-          <div className="about-square"><span>侍</span></div>
-          <p className="about-caption">FIG. 01 / BETWEEN WORLDS</p>
+        <div className="about-frame" data-reveal>
+          <div className="about-viewport">
+            <div className="about-scene">
+              <div className="about-gridlines"/><div className="about-sun"/><div className="about-floor"/>
+              <div className="about-codebox"><div><span>01</span> const developer = {'{'}</div><div><span>02</span> &nbsp; passion: <em>&quot;building&quot;</em>,</div><div><span>03</span> &nbsp; inspiration: <em>&quot;Japan&quot;</em>,</div><div><span>04</span> &nbsp; mindset: <em>&quot;always learning&quot;</em>,</div><div><span>05</span> {'}'}</div><div className="about-cursor">▌</div></div>
+              <div className="about-square"><span>侍</span></div>
+              <p className="about-caption">FIG. 01 / BETWEEN WORLDS</p>
+            </div>
+          </div>
         </div>
         <div className="about-copy" data-reveal>
           <span className="micro-label">{"// A LITTLE ABOUT ME"}</span>

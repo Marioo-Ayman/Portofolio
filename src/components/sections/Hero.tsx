@@ -10,7 +10,7 @@ export function Hero() {
       <div className="hero-image-wrap"><div className="hero-image-drift" data-drift><Image src="/images/neo-tokyo-hero.webp" alt="" fill priority sizes="(max-width: 800px) 100vw, 68vw" className="hero-image"/></div></div>
       <div className="hero-scene-overlay"/><div className="hero-stars"/>
     </div>
-    <div className="hero-vertical" aria-hidden="true"><span>フルスタック開発者</span><i/></div>
+    <div className="hero-vertical" aria-hidden="true"><span lang="ja">フルスタック開発者</span><i/></div>
     <div className="hero-container shell">
       <div className="hero-content">
         <div className="hero-status hero-animate"><span className="status-pulse"/> {site.status}</div>

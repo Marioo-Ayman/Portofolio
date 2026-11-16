@@ -31,7 +31,11 @@ Edit src/content/site.ts, the source of truth for identity, skills, projects, an
 
 ## Implementation
 
-Server Components render the page and project routes. Client boundaries cover navigation, intro, tabs, contact clipboard, and animations. Fonts use next/font/local with packaged Fontsource WOFF2 files, avoiding build-time font downloads.
+Server Components render the page and project routes. Client boundaries cover navigation, intro, tabs, contact clipboard, and animations.
+
+Typography is configured in `src/app/fonts.ts` with `next/font/google`, and exposed through Tailwind v4 `font-display`, `font-ui`, `font-body`, `font-hud`, and `font-code` tokens. Dela Gothic One supplies display headlines and branding; Zen Kaku Gothic New supplies UI and Japanese subtitles; Inter supplies readable body text; DotGothic16 supplies selective HUD labels and numbers. Code samples use the system monospace stack.
+
+Only Dela and Inter Latin files are preloaded. Zen uses two weights (400/700); DotGothic16 uses its native 400 weight. Japanese unicode-range files load only when their glyphs are used. All fonts use `display: swap` and are self-hosted by Next.js, so visitors do not contact Google. A fresh build needs access to Google's font servers. Body and display fallback metrics are provided by Next.js where available. Do not claim field Core Web Vitals without measuring a deployed site.
 
 GSAP matchMedia reverts scroll effects when reduced motion is enabled. Desktop artwork pinning and subtle pointer parallax are restricted to fine pointers at widths above 1050px. Smaller screens retain normal scrolling. The intro lasts under two seconds, supports Escape/skip, runs once per tab, and tolerates blocked storage. Hash navigation skips it. A native dialog supplies modal focus behavior.
 

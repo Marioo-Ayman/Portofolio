@@ -9,7 +9,7 @@
 - Verified/draft project controls, authentic local screenshot support, and clearly labeled illustrative fallbacks.
 - Resume download guarded by local PDF existence.
 - Clipboard feedback and timeout cleanup; absent contacts remain explicitly unavailable.
-- next/font/local, Open Graph image, metadata, sitemap, robots, error retry, and existing favicon.
+- next/font/google typography with Dela Gothic One, Zen Kaku Gothic New, Inter and DotGothic16; Open Graph image, metadata, sitemap, robots, error retry, and existing favicon.
 - Reusable Playwright/axe browser checks.
 
 ## Validation (16 November 2026)

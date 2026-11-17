@@ -45,7 +45,6 @@ export function ScrollAtmosphere() {
       const leave = () => { x(0); y(0); };
       hero?.addEventListener("pointermove", move);
       hero?.addEventListener("pointerleave", leave);
-      // Pin only artwork: the case-study copy and links retain normal document flow.
       gsap.utils.toArray<HTMLElement>(".project-row").forEach(row => {
         gsap.fromTo(row.querySelector(".project-visual-mask"), { clipPath: "inset(0 0 100% 0)" }, {
           clipPath: "inset(0 0 0% 0)", duration: .9, ease: "power3.out",
@@ -53,17 +52,6 @@ export function ScrollAtmosphere() {
         });
         const grid = row.querySelector(".art-grid");
         if (grid) gsap.to(grid, { yPercent: -10, ease: "none", scrollTrigger: { trigger: row, start: "top bottom", end: "bottom top", scrub: true } });
-        const art = row.querySelector<HTMLElement>(".project-art-link");
-        if (art) ScrollTrigger.create({
-          trigger: row,
-          start: "top 115px",
-          end: "+=110",
-          pin: art,
-          pinSpacing: false,
-          // The row's reveal transform creates a containing block for fixed
-          // children. Transform pinning preserves the artwork's grid position.
-          pinType: "transform",
-        });
       });
       return () => { hero?.removeEventListener("pointermove", move); hero?.removeEventListener("pointerleave", leave); };
     });

@@ -1,29 +1,67 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-test("project artwork stays in its column across scroll pin boundaries", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/#projects");
-  for (const row of await page.locator(".project-row").all()) {
-    await row.scrollIntoViewIfNeeded();
-    await expect(row).toHaveCSS("opacity", "1");
-    const start = await row.evaluate(el => el.getBoundingClientRect().top + scrollY - 115);
-    const art = row.locator(".project-art-link");
-    const sample = async (y: number) => {
-      await page.evaluate(async top => {
-        window.scrollTo({ top, behavior: "instant" });
-        await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
-      }, y);
-      return (await art.boundingBox())!;
-    };
-    const before = await sample(start - 5);
-    // Enter, leave, and re-enter each pin, including the reversed middle card.
-    for (const offset of [5, 55, 115, 55, -5]) {
-      const current = await sample(start + offset);
-      expect(Math.abs(current.x - before.x)).toBeLessThan(1);
-      expect(Math.abs(current.width - before.width)).toBeLessThan(1);
+test("project artwork remains naturally positioned across the former pin boundaries", async ({ page }) => {
+  for (const width of [1100, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.goto("/#projects", { waitUntil: "networkidle" });
+    await page.evaluate(async () => {
+      await document.fonts.ready;
+      await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+    });
+    await expect.poll(async () => (await page.locator(".project-art-link").first().boundingBox())?.x ?? 0).toBeGreaterThan(0);
+
+    for (const row of await page.locator(".project-row").all()) {
+      const art = row.locator(".project-art-link");
+      const rowTop = await row.evaluate(el => el.getBoundingClientRect().top + scrollY);
+      const formerPinStart = rowTop - 115;
+      const sample = async (top: number) => {
+        await page.evaluate(async scrollTop => {
+          window.scrollTo({ top: scrollTop, behavior: "instant" });
+          await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+        }, top);
+        return art.evaluate(el => {
+          const rect = el.getBoundingClientRect();
+          return {
+            documentX: rect.x + scrollX,
+            documentY: rect.y + scrollY,
+            width: rect.width,
+            height: rect.height,
+            transform: getComputedStyle(el).transform,
+          };
+        });
+      };
+
+      const baseline = await sample(formerPinStart - 5);
+      // Cross both old pin edges in both directions to catch movement and snapping.
+      for (const offset of [0, 5, 55, 109, 115, 55, 5, -5]) {
+        const current = await sample(formerPinStart + offset);
+        expect(current.documentX).toBeCloseTo(baseline.documentX, 0);
+        expect(current.documentY).toBeCloseTo(baseline.documentY, 0);
+        expect(current.width).toBeCloseTo(baseline.width, 0);
+        expect(current.height).toBeCloseTo(baseline.height, 0);
+        expect(current.transform).toBe("none");
+      }
     }
   }
+});
+
+test("project artwork stays fixed in reduced-motion mode", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/#projects");
+  const art = page.locator(".project-art-link").first();
+  const before = await art.evaluate(el => {
+    const rect = el.getBoundingClientRect();
+    return { x: rect.x + scrollX, y: rect.y + scrollY, width: rect.width };
+  });
+  await page.evaluate(() => window.scrollBy({ top: 250, behavior: "instant" }));
+  const after = await art.evaluate(el => {
+    const rect = el.getBoundingClientRect();
+    return { x: rect.x + scrollX, y: rect.y + scrollY, width: rect.width, transform: getComputedStyle(el).transform };
+  });
+  expect(after).toEqual({ ...before, transform: "none" });
 });
 
 test("intro is dismissible and does not replay", async ({ page }) => {

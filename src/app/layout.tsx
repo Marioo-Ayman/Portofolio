@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { bodyFont, displayFont, hudFont, uiFont } from "./fonts";
 import { canIndex, siteOrigin } from "@/lib/seo";
 import "./globals.css";
+import "./awakening.css";
 import { site } from "@/content/site";
 
 export const metadata: Metadata = {
@@ -24,7 +25,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${displayFont.variable} ${uiFont.variable} ${bodyFont.variable} ${hudFont.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${displayFont.variable} ${uiFont.variable} ${bodyFont.variable} ${hudFont.variable}`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{if(location.pathname==='/'&&!location.hash&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&!sessionStorage.getItem('neon-ronin-intro-seen')){document.documentElement.dataset.intro='pending';setTimeout(function(){var h=document.documentElement;if(h.dataset.intro==='pending'||h.dataset.intro==='playing'){h.dataset.intro='expired';dispatchEvent(new Event('mario:intro-timeout'));dispatchEvent(new Event('mario:hero-reveal'));}},6500);}}catch(e){}})();` }} />
+        {["m","a","r","i","o","seal","circle"].map(name => <link key={name} rel="preload" as="image" href={`/images/brand/${name}.png`} />)}
+      </head>
       <body>{children}</body>
     </html>
   );

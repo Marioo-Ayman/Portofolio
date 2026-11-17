@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { navigation, site } from "@/content/site";
 import Link from "next/link";
+import { NavbarLogo } from "@/components/brand/BrandLogo";
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -11,7 +12,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const toggle = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 28);
+    const onScroll = () => setScrolled(window.scrollY > 100);
     onScroll(); window.addEventListener("scroll", onScroll, { passive: true });
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => { if (entry.isIntersecting) setActive(entry.target.id); });
@@ -42,7 +43,7 @@ export function SiteHeader() {
   }, [open]);
   return <>
     <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
-      <Link className="brand" href="/#home" onClick={() => setOpen(false)} aria-label="Return to home"><span className="brand-mark" lang="ja" aria-hidden="true">忍</span><span className="brand-separator"/><span className="brand-label">{site.displayName}</span></Link>
+      <Link className="brand" href="/#home" onClick={() => setOpen(false)} aria-label="MARIO — Return to home"><NavbarLogo compact={pathname !== "/" || scrolled}/><span className="brand-separator"/><span className="brand-label">{site.displayName}</span></Link>
       <nav className="desktop-nav" aria-label="Primary navigation">{navigation.map(({number,label,href}) =>
         <Link href={`/${href}`} key={href} aria-current={pathname === "/" && active === href.slice(1) ? "location" : undefined} className={`nav-link ${pathname === "/" && active === href.slice(1) ? "active" : ""}`}><span>{number}</span>{label}</Link>
       )}</nav>

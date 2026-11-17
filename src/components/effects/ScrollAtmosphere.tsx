@@ -7,9 +7,14 @@ export function ScrollAtmosphere() {
   useEffect(() => {
     const media = gsap.matchMedia();
     media.add("(prefers-reduced-motion: no-preference)", () => {
-      gsap.fromTo(".hero-animate", { opacity: 0, y: 22 }, { opacity: 1, y: 0, stagger: .09, duration: .8, ease: "power3.out", delay: .15 });
-      gsap.fromTo("[data-hero-line]", { yPercent: 110, opacity: 0 }, { yPercent: 0, opacity: 1, stagger: .12, duration: .95, ease: "power3.out", delay: .2 });
-      gsap.fromTo(".site-header", { y: -15, opacity: 0 }, { y: 0, opacity: 1, duration: .6 });
+      const entrance = gsap.timeline({ paused: true });
+      entrance.fromTo(".hero-animate", { opacity: 0, y: 22 }, { opacity: 1, y: 0, stagger: .09, duration: .8, ease: "power3.out" }, .15)
+        .fromTo("[data-hero-line]", { yPercent: 110, opacity: 0 }, { yPercent: 0, opacity: 1, stagger: .12, duration: .95, ease: "power3.out" }, .2)
+        .fromTo(".site-header", { y: -15, opacity: 0 }, { y: 0, opacity: 1, duration: .6 }, 0);
+      const playEntrance = () => { entrance.play(); };
+      const introState = document.documentElement.dataset.intro;
+      if (introState !== "pending" && introState !== "playing") playEntrance();
+      window.addEventListener("mario:hero-reveal", playEntrance, { once: true });
       gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach(el => {
         if (el.closest(".about-grid")) return;
         gsap.fromTo(el, { opacity: 0, y: 28 }, {
@@ -34,6 +39,7 @@ export function ScrollAtmosphere() {
         });
         ScrollTrigger.create({ trigger: item, start: "top 65%", end: "bottom 25%", toggleClass: "is-current" });
       });
+      return () => window.removeEventListener("mario:hero-reveal", playEntrance);
     });
     media.add("(min-width: 1051px) and (pointer: fine) and (prefers-reduced-motion: no-preference)", () => {
       gsap.to(".hero-image-drift", { yPercent: 12, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: .6 } });

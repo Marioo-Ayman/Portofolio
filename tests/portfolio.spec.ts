@@ -1,6 +1,24 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
+test("brand favicon, metadata, and footer credit", async ({ page }) => {
+  for (const width of [375, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/#contact");
+    await expect(page).toHaveTitle("Mario Ayman | Full-Stack Developer");
+    await expect(page.locator('link[rel="icon"][href="/favicon-32.png"]')).toHaveAttribute("sizes", "32x32");
+    await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute("href", "/apple-touch-icon.png");
+    await expect(page.locator(".logo-designer-credit")).toHaveText("· Logo designed by Designer Name");
+    await expect(page.locator(".logo-designer-credit a")).toHaveCount(0);
+    await expect(page.locator('.contact-footer a[href="#home"]')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  for (const path of ["/favicon-32.png", "/icon-192.png", "/apple-touch-icon.png", "/favicon.ico"]) {
+    expect((await page.request.get(path)).status()).toBe(200);
+  }
+});
+
 test("project artwork remains naturally positioned across the former pin boundaries", async ({ page }) => {
   for (const width of [1100, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
@@ -126,8 +144,10 @@ test("case studies, missing route, metadata and accessibility", async ({ page })
   await page.goto("/");
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
   expect(results.violations).toEqual([]);
-  expect((await page.request.get("/opengraph-image")).status()).toBe(200);
-  expect(await (await page.request.get("/robots.txt")).text()).toContain("Disallow: /");
+  const socialPreview = await page.request.get("/og-preview.png");
+  expect(socialPreview.status()).toBe(200);
+  expect(socialPreview.headers()["content-type"]).toContain("image/png");
+  expect(await (await page.request.get("/robots.txt")).text()).toContain("Allow: /");
 });
 
 test("CV-backed contact actions and public resume", async ({ page, context }) => {
@@ -147,7 +167,9 @@ test("CV-backed contact actions and public resume", async ({ page, context }) =>
   expect(pdf.status()).toBe(200);
   expect((await pdf.body()).subarray(0, 5).toString()).toBe("%PDF-");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://portofolio-gamma-gilt.vercel.app");
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /index/);
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://portofolio-gamma-gilt.vercel.app/og-preview.png");
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
 });
 
 test("animated chapters remain usable and respond to reduced motion", async ({ page }) => {

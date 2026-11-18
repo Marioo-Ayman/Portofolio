@@ -23,7 +23,7 @@ Edit src/content/site.ts, the source of truth for identity, skills, projects, an
 
 Identity, contact details, three experience entries, education, seven training entries and six projects are populated from the supplied CV. Interests come from the owner's brief. `verified` identifies CV-backed project content; it does not claim an independent employment or repository audit.
 
-- The canonical origin is `https://portofolio-gamma-gilt.vercel.app`. `readyToIndex` remains false pending the content review in `CODEX_NEXT_STEPS.md`. Metadata and robots block indexing, and the sitemap remains empty.
+- The canonical origin is `https://portofolio-gamma-gilt.vercel.app`. Search and social crawlers are allowed, and the sitemap includes the homepage and verified project routes.
 - The original Market Simulator route is preserved as a visibly labeled draft, excluded from featured work and the sitemap.
 - Add a personal photo under `public/images`, then set `site.portrait` to `{ src: "/images/mario.webp", alt: "Mario Ayman", position: "center" }`. The existing illustration remains until an authentic portrait is supplied. The frame handles cropping, grayscale/color, zoom and glow.
 - Add authentic project screenshots through `screenshot: { src: "/images/example.webp", alt: "Describe the actual interface" }`. All existing fallback artwork is labeled illustrative.
@@ -57,7 +57,7 @@ Skills support arrow keys, Home, End and Tab. Mobile navigation contains keyboar
 
 ## Deployment
 
-Import `Marioo-Ayman/Portofolio` into Vercel with the Next.js preset. Use the repository root, `npm ci`, and `npm run build`; leave the output directory at its Next.js default. No backend credentials are required. Commit the generated public PDF with the source. Fresh builds need Google Fonts network access. Review a preview deployment before promoting to production. Enable `site.readyToIndex` only after the remaining content review, then rebuild. This task does not publish the site.
+Import `Marioo-Ayman/Portofolio` into Vercel with the Next.js preset. Use the repository root, `npm ci`, and `npm run build`; leave the output directory at its Next.js default. No backend credentials are required. Commit the generated public PDF and social-preview image with the source. Fresh builds need Google Fonts network access. Review a preview deployment before promoting to production. This task does not publish the site.
 
 Metadata includes Open Graph/Twitter previews, a generated local social image, the existing SVG icon, sitemap and robots routes. An error boundary supplies retry/home actions.
 

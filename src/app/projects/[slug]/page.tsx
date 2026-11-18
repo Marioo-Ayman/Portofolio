@@ -19,7 +19,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${project.name} — ${site.displayName}`, description: project.summary,
     alternates: { canonical: siteOrigin ? `/projects/${project.slug}` : null },
-    openGraph: { title: project.name, description: project.summary, url: siteOrigin ? `/projects/${project.slug}` : undefined, images: ["/opengraph-image"] },
+    openGraph: {
+      title: project.name,
+      description: project.summary,
+      url: siteOrigin ? `/projects/${project.slug}` : undefined,
+      images: [{ url: `${site.url}/og-preview.png`, width: 1200, height: 630, alt: `${site.name} — ${site.role}` }],
+    },
     robots: { index: canIndex && Boolean(project.verified), follow: canIndex },
   };
 }

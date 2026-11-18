@@ -35,21 +35,34 @@ for (const width of [1440,375]) {
       }
       if(i===3)for(const path of await page.locator('[data-brush]').all())await expect(path).toHaveCSS("stroke-dashoffset","0px");
       if(i===6) {
-        for(const letter of ["M","A","R"])await expect(page.locator(`[data-letter="${letter}"]`)).toHaveCSS("opacity","0");
-        await expect(page.locator('[data-circle]')).toHaveCSS("opacity","1");
-        await expect(page.locator('[data-power]')).toHaveCSS("opacity","1");
+        for(const letter of ["M","A","R"])await expect(page.locator(`.awakening [data-letter="${letter}"]`)).toHaveCSS("opacity","0");
+        await expect(page.locator('.awakening [data-circle]')).toHaveCSS("opacity","1");
+        await expect(page.locator('.awakening [data-power]')).toHaveCSS("opacity","1");
       }
       const path=testInfo.outputPath(`frame-${i+1}-${width}.png`);
       await page.screenshot({path});
       await testInfo.attach(`frame-${i+1}`,{path,contentType:"image/png"});
     }
     await expect(page.locator("main")).not.toHaveAttribute("inert","");
-    await expect(page.locator(".navbar-logo")).toHaveAttribute("data-variant","vertical");
+    await expect(page.locator('.navbar-logo [data-letter="M"]')).toBeVisible();
     expect(await page.evaluate(()=>({x:scrollX,y:scrollY,overflow:document.documentElement.scrollWidth>innerWidth}))).toEqual({x:0,y:0,overflow:false});
     await expect(page.locator("[data-hero-line]").first()).toHaveCSS("opacity","1");
     expect(errors).toEqual([]);
   });
 }
+
+test("navbar honors reduced motion and keeps the original I/O destination",async({page})=>{
+  await page.setViewportSize({width:375,height:900});
+  await page.emulateMedia({reducedMotion:"reduce"});
+  await page.goto("/#home");
+  const logo=page.locator(".navbar-logo");
+  await expect(logo.locator('[data-letter="M"]')).toHaveCSS("opacity","1");
+  await page.evaluate(()=>scrollTo({top:200,behavior:"instant"}));
+  await expect(logo.locator('[data-letter="M"]')).toHaveCSS("opacity","0");
+  await expect(logo.locator('[data-circle]')).toHaveCSS("opacity","1");
+  await page.evaluate(()=>scrollTo({top:0,behavior:"instant"}));
+  await expect(logo.locator('[data-letter="M"]')).toHaveCSS("opacity","1");
+});
 
 test("skip works immediately, restores input and prevents replay", async ({page})=>{
   await freezeIntro(page);
@@ -63,31 +76,71 @@ test("skip works immediately, restores input and prevents replay", async ({page}
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });
 
-test("both source logos load and scroll reverses without shifting the header",async({page})=>{
-  await page.goto("/#home");
-  const logo=page.locator(".navbar-logo");
-  await expect(logo).toHaveAttribute("data-variant","vertical");
-  await expect.poll(()=>logo.locator("img").evaluateAll(imgs=>imgs.every(img=>(img as HTMLImageElement).complete&&(img as HTMLImageElement).naturalWidth>0))).toBe(true);
-  await expect(logo.locator("img")).toHaveCount(2);
-  await expect(page.getByRole("link",{name:"MARIO — Return to home"})).toHaveAttribute("href","/#home");
-  await expect(page.locator(".site-header")).toHaveCSS("opacity","1");
-  const before=await page.locator(".brand").boundingBox();
-  await page.evaluate(()=>scrollTo({top:200,behavior:"instant"}));
-  await expect(logo).toHaveAttribute("data-variant","compact");
-  await expect(page.locator(".navbar-logo-compact")).toHaveCSS("opacity","1");
-  expect(await page.locator(".brand").boundingBox()).toEqual(before);
-  await page.evaluate(()=>scrollTo({top:0,behavior:"instant"}));
-  await expect(logo).toHaveAttribute("data-variant","vertical");
-  await expect(page.locator(".navbar-logo-vertical")).toHaveCSS("opacity","1");
-  expect(await page.locator(".brand").boundingBox()).toEqual(before);
-  await page.locator(".project-art-link").first().click();
-  await expect(page).toHaveURL(/projects\/live-support-system$/);
-  await expect(logo).toHaveAttribute("data-variant","compact");
-  await expect(page.getByRole("dialog")).toHaveCount(0);
-  await page.getByRole("link",{name:"MARIO — Return to home"}).click();
-  await expect(logo).toHaveAttribute("data-variant","vertical");
-  await expect(page.getByRole("dialog")).toHaveCount(0);
-});
+for (const width of [1440,375]) {
+  test(`navbar shares the storyboard collapse and scrubs reversibly at ${width}px`,async({page},testInfo)=>{
+    await page.setViewportSize({width,height:900});
+    await page.emulateMedia({reducedMotion:"no-preference"});
+    await page.goto("/#home");
+    const logo=page.locator(".navbar-logo");
+    await expect(logo.locator("image")).toHaveCount(7);
+    await expect(page.getByRole("link",{name:"MARIO — Return to home"})).toHaveAttribute("href","/#home");
+    const before=await logo.boundingBox();
+    const sample=async(top:number)=>{
+      await page.evaluate(async y=>{
+        scrollTo({top:y,behavior:"instant"});
+        await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));
+      },top);
+      return logo.evaluate(el=>{
+        const letter=el.querySelector('[data-letter="M"]')!;
+        const seal=el.querySelector('[data-seal]')!;
+        const circle=el.querySelector('[data-circle]')!;
+        const camera=el.querySelector('[data-camera]')!;
+        return {
+          m:getComputedStyle(letter).transform,
+          mOpacity:Number(getComputedStyle(letter).opacity),
+          sealOpacity:Number(getComputedStyle(seal).opacity),
+          circleOpacity:Number(getComputedStyle(circle).opacity),
+          camera:getComputedStyle(camera).transform,
+        };
+      });
+    };
+    const checkpoints=[];
+    for(const [index,top] of [40,80,120,160,200].entries()){
+      checkpoints.push(await sample(top));
+      const path=`artifacts/mario-awakening/navbar-collapse-${width}-${index*25}.png`;
+      await logo.screenshot({path});
+      await testInfo.attach(`${index*25}%`,{path,contentType:"image/png"});
+      const box=await logo.boundingBox();
+      expect(box?.width).toBeCloseTo(before!.width,2);
+      expect(box?.height).toBeCloseTo(before!.height,2);
+    }
+    expect(checkpoints[0].circleOpacity).toBe(0);
+    expect(checkpoints[0].mOpacity).toBe(1);
+    expect(checkpoints[1].m).not.toBe(checkpoints[0].m);
+    expect(checkpoints[2].circleOpacity).toBeGreaterThan(0);
+    expect(checkpoints[3].mOpacity).toBeLessThan(1);
+    expect(checkpoints[4].mOpacity).toBe(0);
+    expect(checkpoints[4].sealOpacity).toBe(0);
+    expect(checkpoints[4].circleOpacity).toBe(1);
+    expect(checkpoints[4].camera).not.toBe(checkpoints[0].camera);
+    const halfway=await sample(120);
+    expect(halfway.mOpacity).toBeCloseTo(checkpoints[2].mOpacity,1);
+    await sample(200);
+    const reverse=await sample(120);
+    expect(reverse.mOpacity).toBeCloseTo(halfway.mOpacity,1);
+    const restored=await sample(0);
+    expect(restored.mOpacity).toBe(1);
+    expect(restored.circleOpacity).toBe(0);
+    await sample(500);
+    expect((await sample(0)).mOpacity).toBe(1);
+    await page.locator(".project-art-link").first().click();
+    await expect(page).toHaveURL(/projects\/live-support-system$/);
+    await expect(logo.locator('[data-letter="M"]')).toHaveCSS("opacity","0");
+    await page.getByRole("link",{name:"MARIO — Return to home"}).click();
+    await expect(logo.locator('[data-letter="M"]')).toHaveCSS("opacity","1");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  });
+}
 
 test("changing reduced motion during playback releases the page",async({page})=>{
   await freezeIntro(page);

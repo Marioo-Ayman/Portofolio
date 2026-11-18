@@ -2,7 +2,7 @@
 // Interests: the owner's portfolio brief. No private phone/address data is stored here.
 export const site = {
   url: "https://portofolio-gamma-gilt.vercel.app",
-  readyToIndex: false, // TODO: resolve the content review items below before enabling.
+  readyToIndex: true,
   name: "Mario Ayman Mofeed",
   displayName: "Mario Ayman",
   firstName: "Mario",
@@ -20,6 +20,12 @@ export const site = {
   title: "Code. Systems. Craft.",
   portrait: null as { src: string; alt: string; position?: string } | null,
 } as const;
+
+// Add the Behance profile URL when the designer's details are confirmed.
+export const logoDesigner = {
+  name: "Designer Name",
+  behanceUrl: "",
+};
 
 export const about = {
   heading: "From the interface to the systems behind it.",

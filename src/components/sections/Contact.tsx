@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Check, Copy, Github, Linkedin, Mail } from "lucide-react";
-import { site } from "@/content/site";
+import { logoDesigner, site } from "@/content/site";
 import { isExternalUrl } from "@/lib/utils";
 import { MagneticLink } from "@/components/ui/MagneticLink";
 import type { ReactNode } from "react";
 
 export function Contact({ resume }: { resume?: ReactNode }) {
+  const designerProfileReady = /^https:\/\/(?:www\.)?behance\.net\/(?!REPLACE_WITH_PROFILE\/?$)[^/?#]+\/?$/i.test(logoDesigner.behanceUrl);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [copyError, setCopyError] = useState(false);
   useEffect(() => () => clearTimeout(timer.current), []);
@@ -39,7 +40,7 @@ export function Contact({ resume }: { resume?: ReactNode }) {
           {resume}
         </div>
       </div>
-      <div className="contact-footer"><span>© {new Date().getFullYear()} {site.name}. CRAFTED WITH INTENTION.</span><a href="#home">BACK TO THE TOP ↑</a><span>侍 / CODE MEETS CULTURE</span></div>
+      <div className="contact-footer"><div className="contact-footer-main"><span>© {new Date().getFullYear()} {site.name}. CRAFTED WITH INTENTION.</span><span className="logo-designer-credit">· Logo designed by {designerProfileReady ? <a href={logoDesigner.behanceUrl} target="_blank" rel="noopener noreferrer">{logoDesigner.name}</a> : logoDesigner.name}</span></div><a href="#home">BACK TO THE TOP ↑</a><span>侍 / CODE MEETS CULTURE</span></div>
     </div>
   </section>;
 }

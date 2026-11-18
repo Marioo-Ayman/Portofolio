@@ -5,13 +5,44 @@ import "./globals.css";
 import "./awakening.css";
 import { site } from "@/content/site";
 
+const socialImageUrl = `${site.url}/og-preview.png`;
+
 export const metadata: Metadata = {
-  title: `${site.name} — Full-Stack Developer`,
+  title: `${site.displayName} | Full-Stack Developer`,
   description: site.description,
+  icons: {
+    icon: [
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   metadataBase: siteOrigin ? new URL(siteOrigin) : undefined,
   alternates: siteOrigin ? { canonical: "/" } : undefined,
-  openGraph: { title: site.name + " - " + site.role, description: site.description, type: "website", locale: "en_US", siteName: "NEON RONIN", ...(siteOrigin ? { url: siteOrigin } : {}) },
-  twitter: { card: "summary_large_image" },
+  openGraph: {
+    title: `${site.name} | ${site.role}`,
+    description: site.description,
+    type: "website",
+    url: site.url,
+    locale: "en_US",
+    siteName: "NEON RONIN",
+    images: [
+      {
+        url: socialImageUrl,
+        width: 1200,
+        height: 630,
+        alt: `${site.name} — ${site.role}`,
+        type: "image/png",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${site.name} | ${site.role}`,
+    description: site.description,
+    images: [socialImageUrl],
+  },
   robots: { index: canIndex, follow: canIndex },
 };
 

@@ -246,6 +246,10 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--red); outline-o
 .copy-button {display:flex;align-items:center;gap:8px;color:#ef597a;background:transparent;border:0;padding:8px 0;font:11px var(--font-ui);}
 .social-links {display:flex;gap:16px;flex-wrap:wrap;margin-top:25px;}.social-links a {display:flex;gap:8px;align-items:center;color:#ddd5e9;font:11px var(--font-ui);}.social-links a:hover {color:var(--red);}
 .contact-footer {display:flex;justify-content:space-between;gap:25px;padding:22px 0 26px;border-top:1px solid rgba(255,255,255,.12);color:#807b8f;font:9px var(--font-ui);letter-spacing:.08em;}.contact-footer a:hover {color:var(--red);}
+.contact-footer-main {display:flex;align-items:baseline;column-gap:9px;row-gap:4px;flex-wrap:wrap;}
+.logo-designer-credit {color:#777184;font-size:8px;letter-spacing:.04em;}
+.logo-designer-credit a {color:inherit;transition:color .2s ease;}
+.logo-designer-credit a:hover,.logo-designer-credit a:focus-visible {color:var(--red);}
 
 /* Intro */
 .intro-overlay { position:fixed;inset:0;z-index:120;display:grid;place-items:center;overflow:hidden;background:#040409;color:white; }
@@ -316,7 +320,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--red); outline-o
   .arsenal-card {min-height:330px;}.arsenal-footer {display:block;}.arsenal-footer span {display:block;margin-bottom:12px;}
   .artwork {height:265px;}.mock-app {width:85%;height:76%;}.mock-topbar {height:29px;}.support-messages {gap:7px;padding:10px;}.support-sidebar {width:33px;gap:12px;}.support-sidebar svg {width:15px;}.mock-heading strong {font-size:10px;}.online-pill {font-size:6px;padding:4px;}.mock-chat {font-size:7px;gap:4px;}.mock-chat p {padding:6px 7px;}.avatar {width:17px;height:17px;font-size:7px;}.mock-input {font-size:8px;padding:7px;}.invest-content {padding:15px;}.invest-content h3 {font-size:19px;}.invest-content svg {height:55px;}.invest-metrics {gap:22px;}.invest-metrics strong {font-size:14px;}.market-content {padding:12px;}.market-stats strong {font-size:17px;}.market-chart {height:90px;margin-top:7px;}.market-tickers {margin-top:9px;}.market-tickers span {font-size:6px;}.market-tickers svg {display:none;}
   .project-details h3 {font-size:37px;}.projects-footnote {display:block;line-height:1.7;}.projects-footnote span {display:block;margin-top:8px;}.journey-item {grid-template-columns:38px 1fr;gap:15px;padding:29px 0;}.journey-item h3 {font-size:25px;}.journey-number {font-size:16px;}.journey-item p {font-size:13px;}
-  .contact-section {padding-top:88px;}.contact-layout {margin-top:36px;}.contact-layout h2 {font-size:clamp(50px,12.5vw,73px);}.contact-pretitle {font-size:9px;}.contact-subtitle {font-size:14px;}.contact-action {padding-left:17px;}.contact-footer {font-size:8px;line-height:1.8;}.contact-footer span:last-child {display:none;}
+  .contact-section {padding-top:88px;}.contact-layout {margin-top:36px;}.contact-layout h2 {font-size:clamp(50px,12.5vw,73px);}.contact-pretitle {font-size:9px;}.contact-subtitle {font-size:14px;}.contact-action {padding-left:17px;}.contact-footer {font-size:8px;line-height:1.8;}.contact-footer > span:last-child {display:none;}.logo-designer-credit {font-size:7px;}
   .intro-content h2 {font-size:29px;}.intro-symbol {font-size:68px;}.intro-skip {right:18px;bottom:20px;}.detail-page {padding-top:100px;}.detail-heading h1 {font-size:48px;}.detail-intro p {font-size:15px;}.detail-art .artwork {height:300px;min-height:300px;}.detail-art .mock-app {width:85%;height:76%;}.detail-art-caption {line-height:1.6;}.detail-content {padding-top:40px;margin-top:45px;}.detail-block {margin-bottom:42px;}
 }
 @media(prefers-reduced-motion: reduce) {
